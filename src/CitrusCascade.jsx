@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-// Refract the liquid pixels in the existing artwork. No extra rain particles.
+// Add a lightweight liquid pass over the existing transparent orange artwork.
 const vertexSource = `
   attribute vec2 position;
   varying vec2 uv;
@@ -11,6 +11,9 @@ const fragmentSource = `
   uniform sampler2D artwork;
   uniform float seconds;
   varying vec2 uv;
+  float circle(vec2 p, vec2 center, float radius) {
+    return 1. - smoothstep(radius * .55, radius, length(p - center));
+  }
   float fruit(vec2 p, vec2 center, vec2 radius) {
     return 1. - smoothstep(.85, 1.15, length((p - center) / radius));
   }
@@ -36,6 +39,27 @@ const fragmentSource = `
     vec4 color = mix(original, flowing, liquid * .9);
     float glint = pow(max(0.,sin(phase + p.x * 23.)), 10.) * liquid;
     color.rgb += vec3(.10,.075,.025) * glint;
+
+    float drops = 0.;
+    drops += circle(p, vec2(.40 + sin(seconds * 1.7) * .025,
+      fract(seconds * .12) * .72 + .15), .012);
+    drops += circle(p, vec2(.62 + sin(seconds * 1.35 + 2.) * .035,
+      fract(seconds * .16 + .28) * .7 + .12), .009);
+    drops += circle(p, vec2(.53 + sin(seconds * 1.1 + 4.) * .04,
+      fract(seconds * .2 + .58) * .62 + .2), .006);
+    float splash = max(
+      circle(p, vec2(.47, .86 + sin(seconds * 2.) * .015), .035),
+      circle(p, vec2(.58, .72 + sin(seconds * 1.7 + 1.) * .02), .025)
+    );
+    float liquidAlpha = max(drops * .85, splash * .48);
+    vec3 juice = vec3(1., .42, .035);
+    float shine = max(circle(p, vec2(.40 + sin(seconds * 1.7) * .025,
+      fract(seconds * .12) * .72 + .15), .003),
+      circle(p, vec2(.62 + sin(seconds * 1.35 + 2.) * .035,
+        fract(seconds * .16 + .28) * .7 + .12), .002));
+    color.rgb = mix(color.rgb, juice, liquidAlpha);
+    color.rgb += vec3(1., .78, .35) * shine * .8;
+    color.a = max(color.a, liquidAlpha);
     gl_FragColor = color;
   }
 `;
@@ -82,6 +106,8 @@ export default function CitrusCascade() {
       return;
     }
     gl.useProgram(program);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(
@@ -170,7 +196,7 @@ export default function CitrusCascade() {
     <div className={`citrus-chain ${ready ? "liquid-ready" : ""}`}>
       <img
         src="/images/orange-cascade.png"
-        alt="Oranges and slices with juice flowing slowly downward from the fruit"
+        alt="Fresh orange halves with glossy juice streams, droplets, and sparkling splashes"
         width="1024"
         height="1536"
         fetchPriority="high"
