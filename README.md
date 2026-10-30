@@ -1,19 +1,30 @@
-# React + Vite
+﻿# Nighi Cafe
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A responsive React and Vite customer website inspired by the supplied drink-brand video: orange-red and cream sections, lime accents, dimensional CSS juice cups, floating motion, and pointer parallax.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `npm install`
+- `npm run dev`
+- `npm run build` creates the production output in `dist/`.
+- `npm run preview` serves the production build.
 
-## React Compiler
+Work on `development` and submit pull requests into `main`.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Current features
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+Homepage, cafe introduction, juice/food/Appam/BBQ menu filters, product detail dialogs, gallery, an accessible 1–5 star review form, and a location/contact section. Responsive navigation and reduced-motion support are included.
 
-## Expanding the Oxlint configuration
+## Content and integration status
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Menu items and LKR prices are samples. Replace them with the cafe's confirmed menu in `src/App.jsx`. The address, phone number, opening hours and map are deliberately awaiting real shop information.
+
+Reviews are a browser-local demo stored under `nighi-review-draft` in localStorage. They are not submitted to a server or published to other visitors. Shared review storage, moderation and the admin dashboard still need backend integration.
+
+The menu drink and fruit illustrations are CSS artwork. The hero keeps the three original cups centered, with AI-generated oranges and juice cascading down the right edge; see [the asset and prompt notes](docs/orange-cascade-artwork.md). The three locally stored gallery photos are illustrative Unsplash photos, not actual Nighi Cafe product photographs:
+
+- Orange juice: image ID photo-1613478223719-2ab802602423
+- Loaded fries: image ID photo-1573080496219-bb080dd4f877
+- Grilled chicken: image ID photo-1532550907401-a500c9a57435
+
+Typography uses DM Sans and Barlow Condensed from Google Fonts, with system fallbacks. Replace illustrative photographs with cafe photos before launch.
