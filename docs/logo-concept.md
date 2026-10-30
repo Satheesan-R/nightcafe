@@ -1,0 +1,7 @@
+# Nighi Cafe logo concept
+
+Created with built-in image generation. Transparent PNG: `public/branding/nighi-cafe-logo.png`. This is a raster logo concept, not an SVG or production vector master. The current website wordmark has not been replaced.
+
+## Final generation prompt
+
+Use case: logo-brand. Create one polished professional logo for a small juice bar and cafe named exactly 'Nighi Cafe'. Transparent background. Design a cohesive horizontal logo lockup: on the left a simple memorable flat emblem combining an orange half/citrus slice with a small fresh green leaf and a subtle cup silhouette, drawn with clean bold elegant shapes; on the right the words 'Nighi Cafe' in distinctive friendly rounded bold lowercase-style lettering, highly legible, with tasteful custom letterforms and balanced spacing. Primary wordmark colour deep warm orange-red #EF3514, leaf olive green #638329, citrus accent golden orange #FFB527. Compact unified mark suitable for shop signage, takeaway juice cups, menus, social media, and a website header. Modern, warm, local cafe personality, not childish. Flat vector-like graphic design with solid colours, clean precise edges, minimal details, no gradients, no 3D, no photograph, no mockup, no scenery, no decorative border, no extra symbols, no tagline, no additional words. Generous clear space all around the complete lockup. Render high resolution on genuine transparent alpha.
