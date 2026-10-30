@@ -730,22 +730,23 @@ export default function App() {
           <div className="footer-intro">
             <Brand />
             <p>Fresh juices, comforting Appam, and smoky BBQ. Crafted with love, served with a smile.</p>
-            <a className="footer-whatsapp" href="https://wa.me/94769400150" target="_blank" rel="noopener noreferrer">WhatsApp us ↗</a>
-          </div>
-          <nav className="footer-column" aria-label="Footer quick links">
-            <h3>Quick Links</h3>
-            {[["Home", "home"], ["Menu", "menu"], ["About", "about"], ["Gallery", "gallery"], ["Reviews", "reviews"], ["Visit us", "visit"]].map(([label, id]) => <a key={id} href={`#${id}`}>{label}</a>)}
-          </nav>
-          <div className="footer-column">
-            <h3>Our Products</h3>
-            {[["Fresh Juices", "Juices"], ["Food & Snacks", "Food"], ["Appam", "Appam"], ["BBQ", "BBQ"]].map(([label, tab]) => <a key={tab} href="#menu" onClick={() => setCategory(tab)}>{label}</a>)}
+
           </div>
           <div className="footer-column footer-contact">
             <h3>Contact Us</h3>
             <a href="https://maps.app.goo.gl/9i9CEYnRwp2E6jrr5" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">⌖</span>Pachchilapalli, Sri Lanka</a>
             <a href="tel:+94769400150"><span aria-hidden="true">☎</span>076 940 0150</a>
-            <a href="https://wa.me/94769400150" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span>Message us on WhatsApp</a>
-            <p><span aria-hidden="true">◷</span>Open Daily: 9 AM – 10 PM</p>
+            <div className="footer-socials" aria-label="Social media">
+              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook (temporary link)">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-9h3l.5-3.5h-3.5V7.3c0-1 .3-1.8 1.8-1.8H17V2.4c-.6-.1-1.6-.2-2.8-.2-2.8 0-4.7 1.7-4.7 4.8v2.5h-3V13h3v9z" /></svg>
+              </a>
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram (temporary link)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+              </a>
+              <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok (temporary link)">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 2h3a5.5 5.5 0 0 0 5 5v3a8.5 8.5 0 0 1-5-1.7V16a6 6 0 1 1-6-6h1v3.1a3 3 0 1 0 2 2.9V2z" /></svg>
+              </a>
+            </div>
           </div>
         </div>
         <div className="footer-bottom">
