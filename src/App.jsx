@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import CitrusCascade from "./CitrusCascade.jsx";
 import LegalDialog from "./LegalDialog.jsx";
@@ -430,7 +430,7 @@ export default function App() {
           </button>
         </header>
         <div className="hero-title">
-          <span className="eyebrow">✳ &nbsp; FRESH SIPS. HAPPY BITES.</span>
+          
           <h1>
             Squeeze <br className="mobile-break" />
             the <em>day.</em>
