@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import CitrusCascade from "./CitrusCascade.jsx";
 import LegalDialog from "./LegalDialog.jsx";
@@ -303,6 +303,72 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const dialog = useRef(null);
   const hero = useRef(null);
+  const menuGrid = useRef(null);
+  const galleryGrid = useRef(null);
+  const aboutSection = useRef(null);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return;
+    const elements = [...aboutSection.current.querySelectorAll(".about-heading, .story-grid > *")];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("about-awaiting-reveal");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    elements.forEach((element, index) => {
+      element.style.setProperty("--reveal-delay", `${(index % 3) * 150}ms`);
+      element.classList.add("about-awaiting-reveal");
+      observer.observe(element);
+    });
+    return () => {
+      observer.disconnect();
+      elements.forEach((element) => element.classList.remove("about-awaiting-reveal"));
+    };
+  }, []);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return;
+    const photos = [...galleryGrid.current.querySelectorAll("figure")];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("gallery-awaiting-reveal");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    photos.forEach((photo, index) => {
+      photo.style.setProperty("--reveal-delay", `${(index % 4) * 150}ms`);
+      photo.classList.add("gallery-awaiting-reveal");
+      observer.observe(photo);
+    });
+    return () => {
+      observer.disconnect();
+      photos.forEach((photo) => photo.classList.remove("gallery-awaiting-reveal"));
+    };
+  }, []);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return;
+    const cards = [...menuGrid.current.querySelectorAll(".product-card")];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("product-awaiting-reveal");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach((card, index) => {
+      card.style.setProperty("--reveal-delay", `${(index % 4) * 150}ms`);
+      card.classList.add("product-awaiting-reveal");
+      observer.observe(card);
+    });
+    return () => {
+      observer.disconnect();
+      cards.forEach((card) => card.classList.remove("product-awaiting-reveal"));
+    };
+  }, [category]);
   useEffect(() => {
     if (selected && !dialog.current.open) dialog.current.showModal();
   }, [selected]);
@@ -446,7 +512,7 @@ export default function App() {
               SAMPLE MENU · LKR · PRICES TO BE CONFIRMED
             </span>
           </div>
-          <div className="product-grid" aria-live="polite">
+          <div className="product-grid" aria-live="polite" ref={menuGrid}>
             {items
               .filter(
                 (item) =>
@@ -508,7 +574,7 @@ export default function App() {
             mood ✳
           </div>
         </section>
-        <section className="about section" id="about">
+        <section className="about section" id="about" ref={aboutSection}>
           <div className="about-heading">
             <span className="about-label">ABOUT AYRA JUICE SHOP</span>
             <span className="eyebrow">FRESH HEART. LOCAL SOUL.</span>
@@ -599,7 +665,7 @@ export default function App() {
               CAFE MOODBOARD · PLACEHOLDER PHOTOS
             </span>
           </div>
-          <div className="gallery-grid">
+          <div className="gallery-grid" ref={galleryGrid}>
             {[
               ["cafe-interior", "Come on in", "A welcoming cafe interior"],
               ["cosy-corner", "Your cosy corner", "Comfortable cafe seating"],

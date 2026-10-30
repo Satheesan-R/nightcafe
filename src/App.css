@@ -1,4 +1,4 @@
-﻿.hero {
+.hero {
   min-height: 850px;
   height: min(960px, 100svh);
   position: relative;
@@ -561,6 +561,9 @@ h3 {
   gap: 35px 24px;
 }
 .product-card {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 1000ms ease var(--reveal-delay, 0ms), translate 1000ms cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms);
   padding: 0;
   text-align: left;
   background: transparent;
@@ -575,6 +578,22 @@ h3 {
   align-items: center;
   justify-content: center;
   transition: border-radius 0.35s;
+}
+.product-card.product-awaiting-reveal {
+  opacity: 0;
+  translate: 0 36px;
+}
+.product-card.product-awaiting-reveal:focus-visible {
+  opacity: 1;
+  translate: 0 0;
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card, .product-card.product-awaiting-reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
 }
 .product-card:hover .product-art {
   border-radius: 24px;
@@ -923,12 +942,42 @@ h3 {
   max-width: 1000px;
   margin-inline: auto;
 }
+.about .about-heading, .about .story-grid > * {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 1000ms ease var(--reveal-delay, 0ms), translate 1000ms cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms);
+}
+.about .about-awaiting-reveal {
+  opacity: 0;
+  translate: 0 36px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about .about-heading, .about .story-grid > * {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}
 .gallery-grid figure {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 1000ms ease var(--reveal-delay, 0ms), translate 1000ms cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms);
   position: relative;
   border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 1.4;
   background: #e5d5b6;
+}
+.gallery-grid figure.gallery-awaiting-reveal {
+  opacity: 0;
+  translate: 0 36px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-grid figure, .gallery-grid figure.gallery-awaiting-reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
 }
 .gallery-grid img {
   width: 100%;
