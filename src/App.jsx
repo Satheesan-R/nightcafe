@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import CitrusCascade from "./CitrusCascade.jsx";
+import LegalDialog from "./LegalDialog.jsx";
 
 const items = [
   {
@@ -124,6 +125,49 @@ function Brand() {
     <a className="brand" href="#home" aria-label="Ayra Juice Shop home">
       Ayra<span>Juice Shop</span>
     </a>
+  );
+}
+
+function StoreLocation() {
+  const [search, setSearch] = useState("");
+  const matches = "Ayra Juice Shop Pachchilapalli Sri Lanka".toLowerCase().includes(search.trim().toLowerCase());
+  const mapsUrl = "https://maps.app.goo.gl/9i9CEYnRwp2E6jrr5";
+  return (
+    <section className="store-locations section" id="visit" aria-labelledby="locations-title">
+      <div className="locations-heading">
+        <h2 id="locations-title">Our store <em>location</em></h2>
+        <p>A fresh sip. A happy bite. Find your way to Ayra Juice Shop and make yourself at home.</p>
+      </div>
+      <div className="location-layout">
+        <div className="location-sidebar">
+          
+          <div aria-live="polite">
+            {matches ? <article className="location-card">
+              <div className="location-card-title"><h3>Ayra Juice Shop</h3><span aria-label="Selected location">✓</span></div>
+              <p>Pachchilapalli, Sri Lanka</p>
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer">Open in Google Maps <span aria-hidden="true">↗</span></a>
+            </article> : <p className="location-empty">No matching location. Try “Ayra” or “Pachchilapalli”.</p>}
+          </div>
+          <p className="location-note">Drop in for a quick refresh or stay for the good food.</p>
+          <div className="location-hours">
+            <div className="location-hours-main">
+              <span>Monday – Sunday</span>
+              <strong>9:00 AM – 10:00 PM</strong>
+            </div>
+            <dl>
+              <div><dt>Daytime service</dt><dd>From 9:00 AM</dd></div>
+              <div><dt>Night BBQ</dt><dd>Evening serving hours to be confirmed</dd></div>
+            </dl>
+            <p>Planning a late stop or a group visit? Get in touch before you travel.</p>
+            <a href="https://wa.me/94769400150" target="_blank" rel="noopener noreferrer">Message us <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div className="location-map">
+          <iframe title="Google map of Pachchilapalli — the location shared for Ayra Juice Shop" src="https://www.google.com/maps?cid=17931908155513015662&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+          <a className="location-map-link" href={mapsUrl} target="_blank" rel="noopener noreferrer">View on Google Maps <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -253,6 +297,7 @@ function Reviews() {
   );
 }
 export default function App() {
+  const [policy, setPolicy] = useState(null);
   const [category, setCategory] = useState("Everything");
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -357,16 +402,14 @@ export default function App() {
             <b>100%</b>
             <span>GOOD MOOD</span>
           </div>
-          <a href="#menu" className="scroll-cue">
-            SCROLL FOR THE GOOD STUFF <span>↓</span>
-          </a>
+          
         </div>
       </section>
       <div className="ticker" aria-hidden="true">
         <div>
           {[1, 2, 3, 4].map((i) => (
             <span key={i}>
-              FRESHLY SQUEEZED <b>✳</b> LOCALLY LOVED <b>✳</b> FIRED UP FLAVOURS{" "}
+              ORANGE SUNSHINE <b>✳</b>WATERMELON WAVE<b>✳</b>GRILLED CHICKEN<b>✳</b>LIME<b>✳</b>EGG APPAM<b>✳</b> MANGO MOOD{" "}
               <b>✳</b>
             </span>
           ))}
@@ -383,11 +426,7 @@ export default function App() {
                 <em>Made for you.</em>
               </h2>
             </div>
-            <p>
-              From your first cool sip to that last smoky bite.
-              <br />
-              Find a little something that hits the spot.
-            </p>
+            
           </div>
           <div className="menu-toolbar">
             <div className="tabs" role="group" aria-label="Filter menu">
@@ -618,67 +657,41 @@ export default function App() {
           </p>
         </section>
         <Reviews />
-        <section className="visit section" id="visit">
-          <div>
-            <span className="eyebrow">THERE’S A PLACE FOR YOU HERE</span>
-            <h2>
-              Same place.
-              <br />
-              <em>New favourite.</em>
-            </h2>
-            <p className="intro-copy">
-              Drop in for a quick refresh or stay for the good food.
-            </p>
-          </div>
-          <div className="visit-details">
-            <div>
-              <span>FIND US</span>
-              <h3>Ayra Juice Shop</h3>
-              <p>Our exact address and map are coming soon.</p>
-            </div>
-            <div>
-              <span>WHEN TO VISIT</span>
-              <h3>Opening hours</h3>
-              <p>Shop opening hours will be added here.</p>
-            </div>
-            <div>
-              <span>LET’S TALK</span>
-              <h3>Get in touch</h3>
-              <p>Phone and contact details coming soon.</p>
-            </div>
-            <p className="small-note">
-              Cafe details are awaiting confirmation.
-            </p>
-          </div>
-        </section>
+        <StoreLocation />
       </main>
-      <footer>
-        <div className="footer-top">
-          <Brand />
-          <p>Fresh sips. Happy bites. Your kind of place.</p>
-          <a href="#home">BACK TO TOP ↑</a>
-        </div>
-        <div className="footer-links">
-          {[
-            ["Our menu", "menu"],
-            ["Our story", "about"],
-            ["Gallery", "gallery"],
-            ["Reviews", "reviews"],
-            ["Visit us", "visit"],
-          ].map(([label, id]) => (
-            <a key={id} href={`#${id}`}>
-              {label}
-            </a>
-          ))}
-        </div>
-        <div className="footer-word" aria-hidden="true">
-          Ayra Juice Shop<span>✳</span>
+      <footer className="cafe-footer">
+        <div className="footer-columns">
+          <div className="footer-intro">
+            <Brand />
+            <p>Fresh juices, comforting Appam, and smoky BBQ. Crafted with love, served with a smile.</p>
+            <a className="footer-whatsapp" href="https://wa.me/94769400150" target="_blank" rel="noopener noreferrer">WhatsApp us ↗</a>
+          </div>
+          <nav className="footer-column" aria-label="Footer quick links">
+            <h3>Quick Links</h3>
+            {[["Home", "home"], ["Menu", "menu"], ["About", "about"], ["Gallery", "gallery"], ["Reviews", "reviews"], ["Visit us", "visit"]].map(([label, id]) => <a key={id} href={`#${id}`}>{label}</a>)}
+          </nav>
+          <div className="footer-column">
+            <h3>Our Products</h3>
+            {[["Fresh Juices", "Juices"], ["Food & Snacks", "Food"], ["Appam", "Appam"], ["BBQ", "BBQ"]].map(([label, tab]) => <a key={tab} href="#menu" onClick={() => setCategory(tab)}>{label}</a>)}
+          </div>
+          <div className="footer-column footer-contact">
+            <h3>Contact Us</h3>
+            <a href="https://maps.app.goo.gl/9i9CEYnRwp2E6jrr5" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">⌖</span>Pachchilapalli, Sri Lanka</a>
+            <a href="tel:+94769400150"><span aria-hidden="true">☎</span>076 940 0150</a>
+            <a href="https://wa.me/94769400150" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span>Message us on WhatsApp</a>
+            <p><span aria-hidden="true">◷</span>Open Daily: 9 AM – 10 PM</p>
+          </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Ayra Juice Shop</span>
+          <div className="footer-legal-links">
+            <button type="button" onClick={() => setPolicy("privacy")}>Privacy Policy</button>
+            <button type="button" onClick={() => setPolicy("terms")}>Terms &amp; Conditions</button>
+          </div>
+          <span>© {new Date().getFullYear()} Ayra Juice Shop All Rights Reserved.</span>
           <span>A LITTLE FRESHNESS GOES A LONG WAY.</span>
         </div>
       </footer>
+      <LegalDialog policy={policy} onClose={() => setPolicy(null)} />
       <dialog
         ref={dialog}
         className="product-dialog"
