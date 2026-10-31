@@ -18,6 +18,11 @@ header {
   position: relative;
   z-index: 10;
 }
+.header-logo { display: inline-flex; flex-shrink: 0; }
+.header-logo img { width: 80px; height: 80px; object-fit: contain; border-radius: 12px; }
+@media (max-width: 760px) {
+  .header-logo img { width: 64px; height: 64px; }
+}
 .brand {
   font-weight: 800;
   font-size: 33px;
@@ -761,6 +766,7 @@ h3 {
   gap: 20px;
 }
 .ribbon {
+  overflow: hidden;
   position: absolute;
   bottom: 105px;
   left: -5%;
@@ -774,6 +780,15 @@ h3 {
   white-space: nowrap;
   z-index: 4;
   border: 1px solid #25271d12;
+}
+.ribbon-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+.ribbon-track > span {
+  flex-shrink: 0;
+  white-space: pre;
 }
 .about {
   background: #faf5e9;

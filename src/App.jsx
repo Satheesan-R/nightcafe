@@ -404,7 +404,9 @@ export default function App() {
         }}
       >
         <header>
-          <Brand />
+          <a className="header-logo" href="#home" aria-label="Ayra Juice Shop home">
+            <img src="/images/logo1-transparent.png" alt="Ayra Juice Bar" width="80" height="80" />
+          </a>
           <nav className={open ? "open" : ""} aria-label="Main navigation">
             {[
               ["Home", "home"],
@@ -570,8 +572,13 @@ export default function App() {
             </a>
           </div>
           <div className="ribbon" aria-hidden="true">
-            ayra juice shop ✳ good food, good mood ✳ ayra juice shop ✳ good food, good
-            mood ✳
+            <div className="ribbon-track">
+              {[0, 1].map((copy) => (
+                <span key={copy}>
+                  {"ayra juice shop ✳ good food, good mood ✳ ".repeat(4)}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
         <section className="about section" id="about" ref={aboutSection}>
