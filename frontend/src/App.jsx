@@ -65,7 +65,7 @@ function StoreLocation() {
   return (
     <section className="store-locations section" id="visit" aria-labelledby="locations-title">
       <div className="locations-heading">
-        <h2 id="locations-title">Our store <em>location</em></h2>
+        <h2 id="locations-title">Our juice bar <em>in Pallai, Jaffna</em></h2>
         <p>A fresh sip. A happy bite. Find your way to Ayra Juice Shop and make yourself at home.</p>
       </div>
       <div className="location-layout">
@@ -359,8 +359,8 @@ function CustomerApp() {
         <div className="hero-title">
           
           <h1>
-            Squeeze <br className="mobile-break" />
-            the <em>day.</em>
+            Jaffna's favourite <br className="mobile-break" />
+            local juice bar <em>in Pallai.</em>
           </h1>
         </div>
         <div className="hero-scene citrus-scene">
