@@ -7,7 +7,7 @@ import { security, securityConfig } from './config.js';
 import { encodeImage } from './uploads.js';
 import sharp from 'sharp';
 import { scryptSync } from 'node:crypto';
-import { readFile, unlink } from 'node:fs/promises';
+import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { resolveAssetUrl } from '../frontend/src/asset-url.js';
 
@@ -284,4 +284,27 @@ test('public and admin upload URLs use the API host while frontend artwork stays
     assert.equal(resolveAssetUrl(image, backend), image);
   }
   assert.equal(resolveAssetUrl('/uploads/legacy.jpg', ''), '/uploads/legacy.jpg');
+});
+
+test('bundled images serve when runtime files are absent and runtime files take precedence', async () => {
+  const filename = `backup-test-${process.pid}.webp`;
+  const target = path.join(uploadDirectory, filename);
+  const backup = new URL(`./seed-uploads/${filename}`, import.meta.url);
+  const image = await sharp({ create: { width: 2, height: 2, channels: 3, background: 'blue' } }).webp().toBuffer();
+  await writeFile(backup, image, { flag: 'wx' });
+  let runtimeCreated = false;
+  try {
+    const url = `${base.replace(/\/api$/, '')}/uploads/${filename}`;
+    const response = await fetch(url);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'image/webp');
+    assert.match(response.headers.get('content-security-policy'), /sandbox/);
+    assert.deepEqual(Buffer.from(await response.arrayBuffer()), image);
+    await writeFile(target, 'runtime precedence', { flag: 'wx' });
+    runtimeCreated = true;
+    assert.equal(await (await fetch(url)).text(), 'runtime precedence');
+  } finally {
+    await unlink(backup);
+    if (runtimeCreated) await unlink(target);
+  }
 });
