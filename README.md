@@ -35,7 +35,7 @@ The customer page loads products, cafe details, photos, and approved reviews fro
 
 Review submissions are stored as pending. Only approved reviews are public. Admin changes, uploads, and access to unapproved reviews require a valid session. Sessions last eight hours, are stored in MongoDB with a hashed token, and are revoked on sign out. The browser receives an HttpOnly cookie; passwords and session tokens are never stored in browser local storage. Expired sessions return the dashboard to login.
 
-Image URLs, descriptions, and captions are stored in MongoDB. Uploaded files live in `backend/uploads/`, served at `/uploads`; this directory requires persistent storage in production, or use externally hosted image URLs.
+Image URLs, descriptions, and captions are stored in MongoDB. When Cloudinary is configured, admin uploads return full HTTPS URLs shared by every deployment. Otherwise, uploaded files live in `backend/uploads/`, served at `/uploads`; disk uploads require persistent storage in production.
 
 Uploads require an admin session. The API accepts one JPEG, PNG, or WebP image of at most 5 MB and 16 megapixels, rejects animations, and decodes/re-encodes it to WebP (at most 2400 × 2400). Filenames are generated UUIDs; original extensions and embedded metadata are discarded. Existing uploads are not rewritten: review any files uploaded before these checks were added. Upload responses include `nosniff` and a restrictive sandbox policy.
 
@@ -77,7 +77,20 @@ For durable local uploads, attach a Render persistent disk at `/var/data` and se
 
 Before switching directories or redeploying a service containing uploads, back up all available image files. Copy existing files from local `backend/uploads` and any surviving deployed uploads into the persistent upload directory, retaining exact filenames and avoiding overwriting existing files. MongoDB stores paths, not these file bytes; no product records or image paths need changing. Files already lost on Render must be recovered from a backup or the original files. Re-uploading creates a new UUID `.webp` path, so it does not by itself repair a record referencing an older filename. Do not rename an existing `.webp` URL to `.jpg`.
 
-Cloudinary or other object storage is an alternative to a persistent disk, not an additional requirement. This application currently writes to disk; Cloudinary would require a separate upload integration. The disk option preserves existing `/uploads/...` paths.
+### Shared images with Cloudinary
+
+The admin upload endpoint supports Cloudinary without frontend changes. It validates and re-encodes images first, sends a signed upload from the backend, and returns the full `https://res.cloudinary.com/...` URL. Saving the product or cafe photo stores that URL in MongoDB. Cloud failures return an error instead of silently saving a temporary disk file.
+
+1. Create a Cloudinary account and get the cloud name, API key, and API secret from its dashboard.
+2. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` in Render's environment and in local `backend/.env`. Never add the secret to Git, Vercel, or a `VITE_` variable. Restart/redeploy the backend.
+3. Use the same MongoDB cluster **and database name** in local and Render `MONGODB_URI` if you want identical products, prices, and photo records everywhere. Changes from either admin then affect that same shop data.
+4. Set Vercel `VITE_API_URL=https://YOUR-SERVICE.onrender.com/api` and redeploy the frontend. Keep the frontend origin/cookie settings described above.
+5. For existing products and cafe photos, open **Edit**, upload the original image again, and **Save**. Recover originals from `backend/uploads/`, `backend/seed-uploads/`, or `frontend/public/images/` where available. Existing `/uploads/...` records are not automatically migrated. Alternatively, upload manually in Cloudinary and paste its HTTPS image URL into the admin Image URL field before saving.
+6. Check a newly saved record: its image value should start with `https://res.cloudinary.com/`. Open it directly, then confirm public and admin images on localhost and Vercel, including after a Render redeploy.
+
+Using the same Cloudinary account alone does not synchronize separate databases. Cloudinary stores image bytes; MongoDB stores which URL belongs to each product/photo. Frontend artwork in `public/images` stays bundled with each frontend deployment. See [Cloudinary upload documentation](https://cloudinary.com/documentation/upload_images).
+
+Leaving all three Cloudinary variables empty keeps the disk option and existing `/uploads/...` paths. Partial configuration rejects uploads. Git tracks local upload files when added and committed, but runtime uploads made on Render never automatically become Git commits or appear on your computer.
 
 Existing images recovered from local storage and Render are also backed up in `backend/seed-uploads/` with their original filenames. Express checks the writable upload directory first, then this deployed backup directory. This repairs the existing split between local-only and Render-only images without editing MongoDB records. Keep this directory in deployment artifacts. New admin uploads still need persistent storage: the backup is a snapshot, not automatic synchronization between servers.
 
