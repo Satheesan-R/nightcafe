@@ -2,116 +2,46 @@
 import "./App.css";
 import CitrusCascade from "./CitrusCascade.jsx";
 import LegalDialog from "./LegalDialog.jsx";
+import AdminAuth from "./admin/AdminAuth.jsx";
+import { request, assetUrl } from "./api.js";
 
-const items = [
-  {
-    name: "Orange sunshine",
-    category: "Juices",
-    price: 450,
-    flavor: "Orange · freshly squeezed",
-    type: "orange",
-    color: "#ffe2a3",
-    badge: "THE CLASSIC",
-  },
-  {
-    name: "Watermelon wave",
-    category: "Juices",
-    price: 400,
-    flavor: "Watermelon · a little lime",
-    type: "melon",
-    color: "#f5ccd0",
-    badge: "SUMMER IN A CUP",
-  },
-  {
-    name: "Mango mood",
-    category: "Juices",
-    price: 550,
-    flavor: "Mango · tropical goodness",
-    type: "mango",
-    color: "#f7e6a1",
-    badge: "TROPICAL PICK",
-  },
-  {
-    name: "Lime & easy",
-    category: "Juices",
-    price: 350,
-    flavor: "Lime · mint · cool refreshment",
-    type: "lime",
-    color: "#dbe5ba",
-    badge: "KEEP IT COOL",
-  },
-  {
-    name: "Loaded crispy fries",
-    category: "Food",
-    price: 650,
-    flavor: "Fries · cheese · house topping",
-    image: "photo-1573080496219-bb080dd4f877",
-    color: "#f6dfba",
-    badge: "SNACK TIME",
-  },
-  {
-    name: "Classic egg Appam",
-    category: "Appam",
-    price: 250,
-    flavor: "Lacy edges · soft centre · egg",
-    type: "appam",
-    color: "#eee1c7",
-    badge: "LOCAL LOVE",
-  },
-  {
-    name: "Coconut milk Appam",
-    category: "Appam",
-    price: 200,
-    flavor: "Coconut milk · a touch of sweetness",
-    type: "milk",
-    color: "#e8e6d1",
-    badge: "COMFORT FOOD",
-  },
-  {
-    name: "Flame grilled chicken",
-    category: "BBQ",
-    price: 1200,
-    flavor: "Smoky chicken · house marinade",
-    image: "photo-1532550907401-a500c9a57435",
-    color: "#ebc8b3",
-    badge: "OFF THE GRILL",
-  },
-];
-const photo = (id) =>
-  ({
-    "photo-1613478223719-2ab802602423": "/images/orange-juice.jpg",
-    "photo-1573080496219-bb080dd4f877": "/images/loaded-fries.jpg",
-    "photo-1532550907401-a500c9a57435": "/images/grilled-chicken.jpg",
-  })[id];
+const defaultCafeContent = {
+  label: "ABOUT AYRA JUICE SHOP",
+  eyebrow: "FRESH HEART. LOCAL SOUL.",
+  titleLineOne: "A little cafe.",
+  titleLineTwo: "A lot to love.",
+  description: "Welcome to Ayra Juice Shop — a place for fresh juices, comforting bites, and time well spent. Start with something fruity, settle in with a delicious Appam, or bring your appetite for BBQ. Whatever you're craving, there's something waiting for you.",
+  stories: [
+    { label: "01 / THE FRESH SIDE", title: "Fruit first.\nHappy always.", description: "Bright and refreshing juice flavours for slow afternoons, quick breaks, and every little moment in between." },
+    { label: "02 / THE COMFORT SIDE", title: "From the pan.\nFrom the flame.", description: "Delicate Appam, satisfying snacks, and smoky BBQ. Different cravings. One happy table." },
+    { label: "03 / THE GOOD VIBES SIDE", title: "Good food.\nBetter moments.", description: "A welcoming little space to catch up with friends, share a laugh, and make every visit feel special." },
+    { label: "04 / THE LOCAL LOVE SIDE", title: "Rooted here.\nMade with love.", description: "Bringing fresh flavours and warm hospitality to our local community, one happy visit at a time." },
+  ],
+};
 function Cup({ type = "orange" }) {
+  const cupImages = {
+    orange: "/images/ayra-orange-cup.png",
+    melon: "/images/ayra-melon-cup.png",
+    mango: "/images/ayra-mango-cup.png",
+    lime: "/images/ayra-lime-cup.png",
+  };
   return (
-    <div className={`drink ${type}`} aria-hidden="true">
-      <div className="straw" />
-      <div className="lid" />
-      <div className="cup">
-        <span className="cup-top">GOOD THINGS INSIDE</span>
-        <b>
-          Ayra<span>Juice Shop</span>
-        </b>
-        <div className="cup-fruit">{type === "melon" ? "◒" : "✳"}</div>
-        <strong>
-          {
-            {
-              orange: "SWEET ORANGE",
-              melon: "WATERMELON",
-              mango: "MANGO MOOD",
-              lime: "LIME & MINT",
-            }[type]
-          }
-        </strong>
-        <small>FRESHLY MADE. HAPPY DAYS.</small>
-      </div>
+    <div className={`drink ayra-cup ${type}`} aria-hidden="true">
+      <img
+        className="ayra-cup-art"
+        src={cupImages[type] || cupImages.orange}
+        alt=""
+        width="1128"
+        height="1376"
+        decoding="async"
+        draggable="false"
+      />
     </div>
   );
 }
 function ProductArt({ item }) {
   if (item.image)
-    return <img src={photo(item.image)} alt={item.name} loading="lazy" />;
+    return <img src={assetUrl(item.image)} alt={item.name} loading="lazy" />;
   if (item.category === "Appam")
     return (
       <div className="appam" aria-hidden="true">
@@ -174,42 +104,28 @@ function StoreLocation() {
 function Reviews() {
   const [rating, setRating] = useState(0);
   const [status, setStatus] = useState("");
-  const [saved, setSaved] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("nighi-review-draft") || "null");
-    } catch {
-      return null;
-    }
-  });
-  function submit(event) {
+  const [reviews, setReviews] = useState([]);
+  const [reviewError, setReviewError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    request('/reviews?public=true').then(setReviews).catch((error) => setReviewError(error.message));
+  }, []);
+  async function submit(event) {
     event.preventDefault();
-    if (!rating) {
-      setStatus("Please choose a star rating.");
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    const review = {
-      name: data.get("name").trim(),
-      message: data.get("message").trim(),
-      rating,
-    };
-    if (!review.name || !review.message) {
-      setStatus("Please add your name and a short review.");
-      return;
-    }
+    if (submitting) return;
+    if (!rating) { setStatus("Please choose a star rating."); return; }
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const review = { name: data.get("name").trim(), message: data.get("message").trim(), rating };
+    if (!review.name || review.message.length < 5) { setStatus("Please add your name and a review of at least 5 characters."); return; }
+    setSubmitting(true);
     try {
-      localStorage.setItem("nighi-review-draft", JSON.stringify(review));
-      setSaved(review);
-      setStatus(
-        "Saved on this device. Online submission will be available when the cafe launches.",
-      );
-      event.currentTarget.reset();
+      await request('/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(review) });
+      setStatus("Thanks! Your review has been saved and will appear after cafe approval.");
+      form.reset();
       setRating(0);
-    } catch {
-      setStatus(
-        "Your browser could not save this review. Please enable browser storage and try again.",
-      );
-    }
+    } catch (error) { setStatus(error.message + " Your review was not saved. Please try again."); }
+    finally { setSubmitting(false); }
   }
   return (
     <section className="reviews section" id="reviews">
@@ -226,19 +142,16 @@ function Reviews() {
         <div className="review-stars" aria-hidden="true">
           ✳ ✳ ✳
         </div>
-        <span className="small-note">
-          Review preview · saved on your device only
-        </span>
-        {saved && (
-          <blockquote>
-            <span aria-label={`${saved.rating} out of 5 stars`}>
-              {"★".repeat(saved.rating)}
-              {"☆".repeat(5 - saved.rating)}
-            </span>
-            <p>“{saved.message}”</p>
-            <cite>— {saved.name} · Your saved review</cite>
+        <span className="small-note">Customer reviews</span>
+        {reviewError && <p role="alert">{reviewError}</p>}
+        {!reviewError && reviews.length === 0 && <p>Be the first to share your experience.</p>}
+        {reviews.map((review) => (
+          <blockquote key={review._id}>
+            <span aria-label={`${review.rating} out of 5 stars`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</span>
+            <p>“{review.message}”</p>
+            <cite>— {review.name}</cite>
           </blockquote>
-        )}
+        ))}
       </div>
       <form className="review-form" onSubmit={submit}>
         <h3>How was your moment?</h3>
@@ -286,26 +199,37 @@ function Reviews() {
           rows={3}
           placeholder="The juice, the food, the feeling…"
         />
-        <button className="button dark" type="submit">
-          Save my review <span>↗</span>
+        <button className="button dark" type="submit" disabled={submitting}>
+          {submitting ? "Submitting…" : "Submit review"} <span>↗</span>
         </button>
         <p className="form-status" role="status">
-          {status || "Demo only. Reviews are not sent to the cafe yet."}
+          {status || "Reviews are published after cafe approval."}
         </p>
       </form>
     </section>
   );
 }
-export default function App() {
+function CustomerApp() {
+  const [items, setItems] = useState([]);
+  const [photos, setPhotos] = useState([]);
+  const [contentError, setContentError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [policy, setPolicy] = useState(null);
   const [category, setCategory] = useState("Everything");
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [cafeContent, setCafeContent] = useState(defaultCafeContent);
   const dialog = useRef(null);
   const hero = useRef(null);
   const menuGrid = useRef(null);
   const galleryGrid = useRef(null);
   const aboutSection = useRef(null);
+  useEffect(() => {
+    Promise.all([request('/products'), request('/cafe-content'), request('/cafe-photos')])
+      .then(([products, content, gallery]) => { setItems(products); setCafeContent(content); setPhotos(gallery); })
+      .catch((error) => setContentError(error.message))
+      .finally(() => setLoading(false));
+  }, []);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return;
     const elements = [...aboutSection.current.querySelectorAll(".about-heading, .story-grid > *")];
@@ -347,7 +271,7 @@ export default function App() {
       observer.disconnect();
       photos.forEach((photo) => photo.classList.remove("gallery-awaiting-reveal"));
     };
-  }, []);
+  }, [photos]);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) return;
     const cards = [...menuGrid.current.querySelectorAll(".product-card")];
@@ -368,7 +292,7 @@ export default function App() {
       observer.disconnect();
       cards.forEach((card) => card.classList.remove("product-awaiting-reveal"));
     };
-  }, [category]);
+  }, [category, items]);
   useEffect(() => {
     if (selected && !dialog.current.open) dialog.current.showModal();
   }, [selected]);
@@ -388,6 +312,7 @@ export default function App() {
       `${-(event.clientY - rect.top - rect.height / 2) / 70}deg`,
     );
   }
+
   return (
     <>
       <a className="skip" href="#menu">
@@ -477,8 +402,7 @@ export default function App() {
         <div>
           {[1, 2, 3, 4].map((i) => (
             <span key={i}>
-              ORANGE SUNSHINE <b>✳</b>WATERMELON WAVE<b>✳</b>GRILLED CHICKEN<b>✳</b>LIME<b>✳</b>EGG APPAM<b>✳</b> MANGO MOOD{" "}
-              <b>✳</b>
+              {items.length ? items.map((item) => <span key={item._id}>{item.name.toUpperCase()} <b>✳</b></span>) : <>FRESH FLAVOURS <b>✳</b> GOOD FOOD <b>✳</b> GOOD MOOD <b>✳</b></>}
             </span>
           ))}
         </div>
@@ -511,9 +435,12 @@ export default function App() {
               ))}
             </div>
             <span className="small-note">
-              SAMPLE MENU · LKR · PRICES TO BE CONFIRMED
+              OUR MENU · LKR
             </span>
           </div>
+          {loading && <p role="status">Loading café content…</p>}
+          {contentError && <p role="alert">{contentError}</p>}
+          {!loading && !contentError && items.filter((item) => category === "Everything" || item.category === category).length === 0 && <p>No products available in this category yet.</p>}
           <div className="product-grid" aria-live="polite" ref={menuGrid}>
             {items
               .filter(
@@ -523,7 +450,7 @@ export default function App() {
               .map((item) => (
                 <button
                   className="product-card"
-                  key={item.name}
+                  key={item._id}
                   onClick={() => setSelected(item)}
                 >
                   <div
@@ -545,8 +472,7 @@ export default function App() {
               ))}
           </div>
           <p className="small-note menu-note">
-            A taste of what’s coming. Menu items, ingredients and prices are
-            illustrative until confirmed by the cafe.
+            Ask our team about ingredients and availability.
           </p>
         </section>
         <section className="flavour-banner">
@@ -583,32 +509,16 @@ export default function App() {
         </section>
         <section className="about section" id="about" ref={aboutSection}>
           <div className="about-heading">
-            <span className="about-label">ABOUT AYRA JUICE SHOP</span>
-            <span className="eyebrow">FRESH HEART. LOCAL SOUL.</span>
+            <span className="about-label">{cafeContent.label}</span>
+            <span className="eyebrow">{cafeContent.eyebrow}</span>
             <h2>
-              A little cafe.
-              <br />A lot to <em>love.</em>
+              {cafeContent.titleLineOne}
+              <br /><em>{cafeContent.titleLineTwo}</em>
             </h2>
-            <p>
-              Welcome to Ayra Juice Shop — a place for fresh juices, comforting
-              bites, and time well spent. Start with something fruity, settle in
-              with a delicious Appam, or bring your appetite for BBQ. Whatever
-              you're craving, there's something waiting for you.
-            </p>
+            <p>{cafeContent.description}</p>
           </div>
           <div className="story-grid">
-            <article className="story-note">
-              <span>01 / THE FRESH SIDE</span>
-              <h3>
-                Fruit first.
-                <br />
-                Happy always.
-              </h3>
-              <p>
-                Bright and refreshing juice flavours for slow afternoons, quick
-                breaks, and every little moment in between.
-              </p>
-            </article>
+            <article className="story-note"><span>{cafeContent.stories[0].label}</span><h3>{cafeContent.stories[0].title.split("\n").map((line) => <span key={line}>{line}<br /></span>)}</h3><p>{cafeContent.stories[0].description}</p></article>
             <div
               className="fruit-composition about-fruit-composition"
               aria-hidden="true"
@@ -622,42 +532,7 @@ export default function App() {
               />
               <i>a little taste of sunshine</i>
             </div>
-            <article className="story-note second-note">
-              <span>02 / THE COMFORT SIDE</span>
-              <h3>
-                From the pan.
-                <br />
-                From the flame.
-              </h3>
-              <p>
-                Delicate Appam, satisfying snacks, and smoky BBQ. Different
-                cravings. One happy table.
-              </p>
-            </article>
-            <article className="story-note third-note">
-              <span>03 / THE GOOD VIBES SIDE</span>
-              <h3>
-                Good food.
-                <br />
-                Better moments.
-              </h3>
-              <p>
-                A welcoming little space to catch up with friends, share a
-                laugh, and make every visit feel special.
-              </p>
-            </article>
-            <article className="story-note fourth-note">
-              <span>04 / THE LOCAL LOVE SIDE</span>
-              <h3>
-                Rooted here.
-                <br />
-                Made with love.
-              </h3>
-              <p>
-                Bringing fresh flavours and warm hospitality to our local
-                community, one happy visit at a time.
-              </p>
-            </article>
+            {[1, 2, 3].map((storyIndex) => <article className={`story-note ${["second-note", "third-note", "fourth-note"][storyIndex - 1]}`} key={storyIndex}><span>{cafeContent.stories[storyIndex].label}</span><h3>{cafeContent.stories[storyIndex].title.split("\n").map((line) => <span key={line}>{line}<br /></span>)}</h3><p>{cafeContent.stories[storyIndex].description}</p></article>)}
           </div>
         </section>
         <section className="gallery section" id="gallery">
@@ -669,53 +544,15 @@ export default function App() {
               </h2>
             </div>
             <span className="small-note">
-              CAFE MOODBOARD · PLACEHOLDER PHOTOS
+              MOMENTS AT OUR CAFE
             </span>
           </div>
           <div className="gallery-grid" ref={galleryGrid}>
-            {[
-              ["cafe-interior", "Come on in", "A welcoming cafe interior"],
-              ["cosy-corner", "Your cosy corner", "Comfortable cafe seating"],
-              [
-                "at-the-counter",
-                "Behind the counter",
-                "A cafe counter and service area",
-              ],
-              [
-                "coffee-moments",
-                "Little everyday moments",
-                "Freshly prepared coffee",
-              ],
-              [
-                "window-seat",
-                "Stay a little longer",
-                "A light-filled cafe space",
-              ],
-              [
-                "around-the-table",
-                "Meet you at the table",
-                "Tables in a neighbourhood cafe",
-              ],
-              [
-                "freshly-made",
-                "Made for a slow afternoon",
-                "A warm drink served in a cafe",
-              ],
-              [
-                "evening-mood",
-                "Time to unwind",
-                "A relaxed coffee moment at a cafe",
-              ],
-              [
-                "room-for-friends",
-                "Room for good company",
-                "A welcoming dining space",
-              ],
-            ].map(([id, title, alt]) => (
-              <figure key={id}>
+            {photos.map(({ _id, image, title, alt }) => (
+              <figure key={_id}>
                 <img
-                  src={`/images/cafe/${id}.jpg`}
-                  alt={`${alt} — placeholder, not a photo of Ayra Juice Shop`}
+                  src={assetUrl(image)}
+                  alt={alt || title}
                   width="900"
                   height="700"
                   loading="lazy"
@@ -725,8 +562,7 @@ export default function App() {
             ))}
           </div>
           <p className="small-note gallery-note">
-            A glimpse of the atmosphere we love. These illustrative photos will
-            be replaced with real moments from Ayra Juice Shop.
+            {!loading && !contentError && photos.length === 0 ? "Cafe photos coming soon." : "A little glimpse of life at our cafe."}
           </p>
         </section>
         <Reviews />
@@ -787,13 +623,12 @@ export default function App() {
               <ProductArt item={selected} />
             </div>
             <div className="dialog-copy">
-              <span className="eyebrow">{selected.category} · SAMPLE ITEM</span>
+              <span className="eyebrow">{selected.category}</span>
               <h2>{selected.name}</h2>
               <p>{selected.flavor}</p>
               <strong>Rs. {selected.price.toLocaleString()}</strong>
               <p className="small-note">
-                Sample price in LKR. Final menu, portions and availability to be
-                confirmed. Please check ingredients and allergens with the cafe
+                Prices in LKR. Please check ingredients and allergens with the cafe
                 before ordering.
               </p>
               <button
@@ -808,4 +643,8 @@ export default function App() {
       </dialog>
     </>
   );
+}
+
+export default function App() {
+  return /^\/admin(?:\/|$)/.test(window.location.pathname) ? <AdminAuth /> : <CustomerApp />;
 }
