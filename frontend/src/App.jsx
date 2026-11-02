@@ -359,8 +359,8 @@ function CustomerApp() {
         <div className="hero-title">
           
           <h1>
-            Jaffna's favourite <br className="mobile-break" />
-            local juice bar <em>in Pallai.</em>
+            Squeese the <span>day</span> <br className="mobile-break" />
+             
           </h1>
         </div>
         <div className="hero-scene citrus-scene">
