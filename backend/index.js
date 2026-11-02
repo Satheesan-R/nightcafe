@@ -12,9 +12,11 @@ import fs from "node:fs";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 5000;
-const uploadDirectory = path.join(__dirname, "uploads");
+// Resolve relative settings against this module, never the process working directory.
+export const uploadDirectory = path.resolve(__dirname, process.env.UPLOAD_DIR?.trim() || "uploads");
 const frontendDirectory = path.join(__dirname, "..", "frontend", "dist");
 fs.mkdirSync(uploadDirectory, { recursive: true });
+fs.accessSync(uploadDirectory, fs.constants.R_OK | fs.constants.W_OK);
 
 app.disable('x-powered-by');
 app.set('trust proxy', security.trustProxy);
@@ -186,7 +188,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     mongoose.connect(mongoUri)
       .then(async () => {
         if (!await CafeContent.exists({})) await CafeContent.create(defaultCafeContent);
-        app.listen(port, () => console.log(`Ayra API listening on http://localhost:${port}`));
+        app.listen(port, () => {
+          console.log(`Ayra API listening on http://localhost:${port}`);
+          console.log(`Serving /uploads from ${uploadDirectory}`);
+          if (security.production && !process.env.UPLOAD_DIR?.trim()) {
+            console.warn('Uploads use the local backend/uploads directory. Configure persistent storage to retain images across deploys.');
+          }
+        });
       })
       .catch((error) => {
         console.error("MongoDB connection failed.");
