@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import { after, test, mock } from 'node:test';
 import mongoose from 'mongoose';
-import { app } from './index.js';
+import { app, uploadDirectory } from './index.js';
 import { Admin, AdminSession, LoginAttempt, hashPassword, verifyPassword, limitLogin } from './auth.js';
 import { security, securityConfig } from './config.js';
 import { encodeImage } from './uploads.js';
 import sharp from 'sharp';
 import { scryptSync } from 'node:crypto';
-import { unlink } from 'node:fs/promises';
+import { readFile, unlink } from 'node:fs/promises';
+import path from 'node:path';
+import { resolveAssetUrl } from '../frontend/src/asset-url.js';
 
 const server = app.listen(0, '127.0.0.1');
 await new Promise((resolve) => server.once('listening', resolve));
@@ -259,13 +261,27 @@ test('uploads require admin auth, reject spoofed images, and serve re-encoded We
     const { url } = await response.json();
     assert.match(url, /^\/uploads\/[a-f0-9-]{36}\.webp$/);
     filename = url.split('/').pop();
+    const saved = await readFile(path.join(uploadDirectory, filename));
+    assert.equal((await sharp(saved).metadata()).format, 'webp');
     const image = await fetch(`${base.replace(/\/api$/, '')}${url}`);
+    assert.equal(image.status, 200);
     assert.equal(image.headers.get('content-type'), 'image/webp');
     assert.equal(image.headers.get('x-content-type-options'), 'nosniff');
     assert.match(image.headers.get('content-security-policy'), /sandbox/);
     assert.equal((await sharp(Buffer.from(await image.arrayBuffer())).metadata()).format, 'webp');
   } finally {
     session.mock.restore();
-    if (filename) await unlink(new URL(`./uploads/${filename}`, import.meta.url));
+    if (filename) await unlink(path.join(uploadDirectory, filename));
   }
+});
+
+test('public and admin upload URLs use the API host while frontend artwork stays local', () => {
+  const backend = 'https://ayra-test.onrender.com';
+  for (const image of ['/uploads/photo.webp', 'uploads/photo.webp', './uploads/photo.webp', ' /uploads/photo.webp ']) {
+    assert.equal(resolveAssetUrl(image, backend), `${backend}/uploads/photo.webp`);
+  }
+  for (const image of ['/images/fruit.png', 'https://images.example/photo.jpg', '', undefined]) {
+    assert.equal(resolveAssetUrl(image, backend), image);
+  }
+  assert.equal(resolveAssetUrl('/uploads/legacy.jpg', ''), '/uploads/legacy.jpg');
 });

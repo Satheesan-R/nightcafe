@@ -1,9 +1,9 @@
-const configuredApi = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+import { resolveAssetUrl } from './asset-url.js';
+
+const configuredApi = (import.meta.env.VITE_API_URL || '/api').trim().replace(/\/+$/, '');
 export const API = configuredApi.endsWith('/api') ? configuredApi : `${configuredApi}/api`;
 
-export const assetUrl = (value) => value?.startsWith('/uploads/')
-  ? `${API.replace(/\/api$/, '')}${value}`
-  : value;
+export const assetUrl = (value) => resolveAssetUrl(value, API.replace(/\/api$/, ''));
 
 export async function request(endpoint, options) {
   let response;
