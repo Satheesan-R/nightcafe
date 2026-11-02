@@ -10,6 +10,37 @@ import { scryptSync } from 'node:crypto';
 import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { resolveAssetUrl } from '../frontend/src/asset-url.js';
+import { uploadCloudImage } from './cloudinary.js';
+import { createHash } from 'node:crypto';
+
+test('cloud uploads are signed on the backend and return a shared HTTPS image URL', async () => {
+  const env = { CLOUDINARY_CLOUD_NAME: 'test-shop', CLOUDINARY_API_KEY: 'test-key', CLOUDINARY_API_SECRET: 'test-secret' };
+  const buffer = Buffer.from('encoded-image');
+  const url = 'https://res.cloudinary.com/test-shop/image/upload/v1/photo.webp';
+  const result = await uploadCloudImage(buffer, { env, fetchImpl: async (endpoint, options) => {
+    assert.equal(endpoint, 'https://api.cloudinary.com/v1_1/test-shop/image/upload');
+    assert.equal(options.method, 'POST');
+    const form = options.body;
+    assert.equal(form.get('api_key'), 'test-key');
+    assert.equal(form.get('signature'), createHash('sha256').update(`timestamp=${form.get('timestamp')}test-secret`).digest('hex'));
+    assert.equal(form.has('api_secret'), false);
+    assert.equal(form.get('file').type, 'image/webp');
+    assert.deepEqual(Buffer.from(await form.get('file').arrayBuffer()), buffer);
+    return { ok: true, json: async () => ({ secure_url: url }) };
+  } });
+  assert.equal(result, url);
+  for (const backend of ['', 'http://localhost:5000', 'https://shop.onrender.com']) {
+    assert.equal(resolveAssetUrl(result, backend), url);
+  }
+});
+
+test('cloud uploads only fall back to disk when all credentials are absent', async () => {
+  assert.equal(await uploadCloudImage(Buffer.alloc(0), { env: {} }), null);
+  await assert.rejects(uploadCloudImage(Buffer.alloc(0), { env: { CLOUDINARY_CLOUD_NAME: 'test-shop' } }), { status: 503 });
+  const env = { CLOUDINARY_CLOUD_NAME: 'test-shop', CLOUDINARY_API_KEY: 'key', CLOUDINARY_API_SECRET: 'secret' };
+  await assert.rejects(uploadCloudImage(Buffer.alloc(0), { env, fetchImpl: async () => ({ ok: false }) }), { status: 502 });
+  await assert.rejects(uploadCloudImage(Buffer.alloc(0), { env, fetchImpl: async () => ({ ok: true, json: async () => ({ secure_url: 'http://unsafe.example/image' }) }) }), { status: 502 });
+});
 
 const server = app.listen(0, '127.0.0.1');
 await new Promise((resolve) => server.once('listening', resolve));

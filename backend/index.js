@@ -179,6 +179,7 @@ app.use((error, _request, response, _next) => {
     return response.status(error.code === 'LIMIT_FILE_SIZE' ? 413 : 400).json({ message: 'Upload exactly one image, at most 5 MB, with no extra fields.' });
   }
   if (error.status === 400) return response.status(400).json({ message: error.message });
+  if ([502, 503].includes(error.status)) return response.status(error.status).json({ message: error.message });
   console.error(error);
   response.status(error.name === "ValidationError" ? 400 : 500).json({ message: error.name === "ValidationError" ? error.message : "Server error." });
 });
@@ -197,7 +198,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         app.listen(port, () => {
           console.log(`Ayra API listening on http://localhost:${port}`);
           console.log(`Serving /uploads from ${uploadDirectory}`);
-          if (security.production && !process.env.UPLOAD_DIR?.trim()) {
+          if (security.production && !process.env.UPLOAD_DIR?.trim() && !process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
             console.warn('Uploads use the local backend/uploads directory. Configure persistent storage to retain images across deploys.');
           }
         });

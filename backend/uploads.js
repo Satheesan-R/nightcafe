@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { writeFile } from 'node:fs/promises';
+import { uploadCloudImage } from './cloudinary.js';
 
 export const receiveImage = multer({
   storage: multer.memoryStorage(),
@@ -31,6 +32,8 @@ export function saveImage(directory) {
     try {
       if (!request.file) return response.status(400).json({ message: 'An image is required (maximum 5 MB).' });
       const buffer = await encodeImage(request.file.buffer);
+      const cloudUrl = await uploadCloudImage(buffer);
+      if (cloudUrl) return response.status(201).json({ url: cloudUrl });
       const filename = `${randomUUID()}.webp`;
       await writeFile(path.join(directory, filename), buffer, { flag: 'wx' });
       response.status(201).json({ url: `/uploads/${filename}` });
