@@ -15,6 +15,7 @@ const port = process.env.PORT || 5000;
 // Resolve relative settings against this module, never the process working directory.
 export const uploadDirectory = path.resolve(__dirname, process.env.UPLOAD_DIR?.trim() || "uploads");
 const frontendDirectory = path.join(__dirname, "..", "frontend", "dist");
+const bundledUploadDirectory = path.join(__dirname, "seed-uploads");
 fs.mkdirSync(uploadDirectory, { recursive: true });
 fs.accessSync(uploadDirectory, fs.constants.R_OK | fs.constants.W_OK);
 
@@ -27,6 +28,11 @@ app.use((_request, response, next) => {
 app.use(cors({ origin: security.frontendUrl, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use("/uploads", express.static(uploadDirectory, { setHeaders: (response) => {
+  response.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+} }));
+// Existing image backups ship with the app. Runtime/persistent uploads take
+// precedence; missing legacy files can still be served without changing DB paths.
+app.use("/uploads", express.static(bundledUploadDirectory, { setHeaders: (response) => {
   response.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
 } }));
 app.use(express.static(frontendDirectory));
