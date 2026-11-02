@@ -142,6 +142,18 @@ nav a:hover:after {
   --label: #fcf1cf;
   transform-style: preserve-3d;
 }
+.drink.ayra-cup .ayra-cup-art {
+  position: absolute;
+  left: -20%;
+  top: -10%;
+  width: 140%;
+  height: 115%;
+  max-width: none;
+  object-fit: contain;
+  mix-blend-mode: normal;
+  user-select: none;
+  pointer-events: none;
+}
 .drink.melon {
   --juice: #ed5966;
   --dark-juice: #bc293c;
