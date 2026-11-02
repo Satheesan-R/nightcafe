@@ -25,7 +25,24 @@ app.use((_request, response, next) => {
   response.set('X-Content-Type-Options', 'nosniff');
   next();
 });
-app.use(cors({ origin: security.frontendUrl, credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ayrajuicebar.com",
+  "https://www.ayrajuicebar.com",
+  "https://frontend-mu-tan-dgbmndl618.vercel.app",
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    const error = new Error(`CORS blocked this origin: ${origin}`);
+    error.status = 403;
+    return callback(error);
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use("/uploads", express.static(uploadDirectory, { setHeaders: (response) => {
   response.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
@@ -175,6 +192,7 @@ app.use((request, response, next) => {
 });
 
 app.use((error, _request, response, _next) => {
+  if (error.status === 403) return response.status(403).json({ message: error.message });
   if (error.name === 'MulterError') {
     return response.status(error.code === 'LIMIT_FILE_SIZE' ? 413 : 400).json({ message: 'Upload exactly one image, at most 5 MB, with no extra fields.' });
   }
