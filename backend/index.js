@@ -25,7 +25,16 @@ app.use((_request, response, next) => {
   response.set('X-Content-Type-Options', 'nosniff');
   next();
 });
-app.use(cors({ origin: security.frontendUrl, credentials: true }));
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://ayrajuicebar.com",
+    "https://www.ayrajuicebar.com",
+    security.frontendUrl,
+  ],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
 app.use("/uploads", express.static(uploadDirectory, { setHeaders: (response) => {
   response.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
