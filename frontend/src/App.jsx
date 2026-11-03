@@ -213,30 +213,16 @@ function Reviews() {
     </section>
   );
 }
-const heroSlides = [
-  { image: "/images/ayra-orange-cup.png", label: "Ayra fresh orange juice", brandedCup: true },
-  { image: "/images/grilled-chicken.jpg", label: "Smoky BBQ" },
-  { image: "/images/appam.jpg", label: "Fresh Appam" },
-  { image: "/images/loaded-fries.jpg", label: "Happy bites" },
-];
-
 function HeroBackdrop() {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  useEffect(() => {
-    if (paused) return;
-    const timer = window.setInterval(() => setActive((slide) => (slide + 1) % heroSlides.length), 6000);
-    return () => window.clearInterval(timer);
-  }, [paused]);
-  return <>
+  return (
     <div className="hero-backdrops" aria-hidden="true">
-      {heroSlides.map((slide, index) => <img key={slide.image} src={slide.image} alt="" className={`${index === active ? "active" : ""}${slide.brandedCup ? " hero-branded-cup" : ""}`} fetchPriority={index === 0 ? "high" : "auto"} />)}
+      <div className="hero-cup-trio">
+      <img src="/images/ayra-mango-cup.png" alt="" />
+      <img src="/images/ayra-orange-cup.png" alt="" fetchPriority="high" />
+      <img src="/images/ayra-lime-cup.png" alt="" />
+      </div>
     </div>
-    <div className="hero-slide-controls" role="group" aria-label="Hero background slideshow">
-      {heroSlides.map((slide, index) => <button key={slide.image} className={index === active ? "active" : ""} aria-label={`Show ${slide.label}`} aria-pressed={index === active} onClick={() => setActive(index)}><span /></button>)}
-      <button className="hero-pause" aria-label={paused ? "Play slideshow" : "Pause slideshow"} onClick={() => setPaused(!paused)}>{paused ? "▶" : "Ⅱ"}</button>
-    </div>
-  </>;
+  );
 }
 
 function CustomerApp() {
@@ -388,16 +374,13 @@ function CustomerApp() {
           </button>
         </header>
         <div className="photo-hero-content">
-          <span className="hero-location"><i /> FRESH FLAVOURS. LOCAL SOUL.</span>
+          
           <h1>Juice shop bar<br />in <span>Pallai.</span></h1>
           <p>Fresh juices, warm Appam and smoky BBQ.<br className="desktop-break" /> A little fresh. A little fire. A whole lot of good times.</p>
           <div className="hero-actions">
             <a className="hero-primary" href="#menu">Explore our menu <span>↗</span></a>
             <a className="hero-secondary" href="#visit">Find us in Pallai <span>↗</span></a>
           </div>
-        </div>
-        <div className="hero-highlights">
-          {[["01", "Fresh juices", "Fruit-filled refreshment"], ["02", "Warm Appam", "Comfort in every bite"], ["03", "Smoky BBQ", "Good food from the flame"], ["04", "Good company", "Your local spot in Pallai"]].map(([number, title, subtitle]) => <div key={number}><span>{number}</span><div><strong>{title}</strong><small>{subtitle}</small></div></div>)}
         </div>
       </section>
       <div className="ticker" aria-hidden="true">
