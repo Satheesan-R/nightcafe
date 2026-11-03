@@ -214,7 +214,7 @@ function Reviews() {
   );
 }
 const heroSlides = [
-  { image: "/images/orange-juice.jpg", label: "Fresh juices" },
+  { image: "/images/ayra-orange-cup.png", label: "Ayra fresh orange juice", brandedCup: true },
   { image: "/images/grilled-chicken.jpg", label: "Smoky BBQ" },
   { image: "/images/appam.jpg", label: "Fresh Appam" },
   { image: "/images/loaded-fries.jpg", label: "Happy bites" },
@@ -230,7 +230,7 @@ function HeroBackdrop() {
   }, [paused]);
   return <>
     <div className="hero-backdrops" aria-hidden="true">
-      {heroSlides.map((slide, index) => <img key={slide.image} src={slide.image} alt="" className={index === active ? "active" : ""} fetchPriority={index === 0 ? "high" : "auto"} />)}
+      {heroSlides.map((slide, index) => <img key={slide.image} src={slide.image} alt="" className={`${index === active ? "active" : ""}${slide.brandedCup ? " hero-branded-cup" : ""}`} fetchPriority={index === 0 ? "high" : "auto"} />)}
     </div>
     <div className="hero-slide-controls" role="group" aria-label="Hero background slideshow">
       {heroSlides.map((slide, index) => <button key={slide.image} className={index === active ? "active" : ""} aria-label={`Show ${slide.label}`} aria-pressed={index === active} onClick={() => setActive(index)}><span /></button>)}

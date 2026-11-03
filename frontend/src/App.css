@@ -2315,15 +2315,38 @@ footer {
   height: auto;
   display: flex;
   flex-direction: column;
-  background: #3b170c;
+  background: linear-gradient(120deg, #bd2911, var(--red) 55%, #b92610);
   color: #fff9f1;
   padding-bottom: 48px;
 }
 .hero-backdrops, .hero-backdrops::after { position: absolute; inset: 0; }
 .hero-backdrops { z-index: -1; overflow: hidden; }
-.hero-backdrops img { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 1.4s ease; }
+.hero-backdrops img {
+  position: absolute;
+  top: 100px;
+  right: 7%;
+  width: 45%;
+  height: calc(100% - 210px);
+  object-fit: contain;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
 .hero-backdrops img.active { opacity: 1; }
-.hero-backdrops::after { content: ""; background: linear-gradient(90deg, rgba(49,17,5,.93) 0%, rgba(79,28,8,.77) 42%, rgba(91,34,8,.25) 100%), linear-gradient(0deg, rgba(44,15,4,.85), transparent 55%); }
+.hero-backdrops img:not(.hero-branded-cup) {
+  object-fit: cover;
+  /* Fade the photo's rectangular edges into the shared orange background. */
+  mask-image: radial-gradient(ellipse closest-side, #000 50%, transparent 100%);
+}
+.hero-backdrops::after {
+  content: "";
+  background:
+    linear-gradient(120deg, #bd291180, #ef351459 55%, #b9261033),
+    linear-gradient(90deg, #65160980, transparent 75%),
+    linear-gradient(180deg, #bd29114d, transparent 28%, transparent 65%, var(--red));
+}
+.photo-hero-content { text-shadow: 0 2px 10px rgba(0, 0, 0, .55); }
+.hero-actions { text-shadow: none; }
 .photo-hero header { width: min(1320px, 90%); margin: 0 auto; padding: 22px 0; border-bottom: 1px solid #ffffff26; }
 .photo-hero .header-logo img { background: #fff8ec; padding: 5px; width: 76px; height: 76px; border-radius: 50%; }
 .photo-hero .visit-button { background: #f97821; border-color: #f97821; color: #fff; font-weight: 700; font-size: 11px; padding: 8px 13px; gap: 14px; }
@@ -2340,7 +2363,7 @@ footer {
 .hero-secondary { border: 1px solid #ffffff66; background: #ffffff0c; backdrop-filter: blur(8px); }
 .hero-actions a:hover { transform: translateY(-3px); background: #c8520e; }
 .hero-highlights { width: min(1320px, 90%); margin: auto auto 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.hero-highlights > div { display: flex; align-items: center; gap: 16px; padding: 23px 20px; border: 1px solid #ffb97735; background: #421d0eb8; backdrop-filter: blur(12px); border-radius: 12px; }
+.hero-highlights > div { display: flex; align-items: center; gap: 16px; padding: 23px 20px; border: 1px solid #ffbd8055; background: linear-gradient(120deg, #bd2911cc, #ef3514b3 55%, #b92610cc); backdrop-filter: blur(12px); border-radius: 12px; }
 .hero-highlights > div > span { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #f978211a; border: 1px solid #f9782155; font-size: 12px; color: #ffa253; }
 .hero-highlights strong { display: block; font-size: 18px; letter-spacing: -.4px; }
 .hero-highlights small { display: block; margin-top: 5px; color: #dec3ac; font-size: 11px; }
@@ -2371,7 +2394,18 @@ footer {
   .hero-highlights > div > span { width: 30px; height: 34px; font-size: 10px; }
   .hero-highlights strong { font-size: 14px; }
   .hero-highlights small { font-size: 10px; line-height: 1.5; }
-  .hero-backdrops::after { background: linear-gradient(90deg, #311105e8, #4f1c0899), linear-gradient(0deg, #2c0f04cc, transparent); }
+  .hero-backdrops::after {
+    background:
+      linear-gradient(120deg, #bd291180, #ef351459 55%, #b9261033),
+      linear-gradient(90deg, #65160980, #65160926),
+      linear-gradient(180deg, #bd29114d, transparent 25%, transparent 65%, var(--red));
+  }
+  .hero-backdrops img {
+    top: 110px;
+    right: 0;
+    width: 80%;
+    height: calc(100% - 270px);
+  }
 }
 @media (prefers-reduced-motion: reduce) { .hero-backdrops img, .hero-actions a { transition: none; } }
 
