@@ -2311,7 +2311,7 @@ footer {
 
 /* Photography-led customer hero */
 .photo-hero {
-  min-height: 780px;
+  min-height: 900px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -2378,10 +2378,10 @@ footer {
 .hero-highlights > div > span { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #f978211a; border: 1px solid #f9782155; font-size: 12px; color: #ffa253; }
 .hero-highlights strong { display: block; font-size: 18px; letter-spacing: -.4px; }
 .hero-highlights small { display: block; margin-top: 5px; color: #dec3ac; font-size: 11px; }
-@media (min-width: 1600px) { .photo-hero { min-height: 880px; } .photo-hero-content { margin-top: 100px; } }
+@media (min-width: 1600px) { .photo-hero { min-height: 1000px; } .photo-hero-content { margin-top: 100px; } }
 @media (max-width: 1000px) { .hero-highlights { grid-template-columns: repeat(2, 1fr); } .photo-hero-content { margin-top: 60px; } }
 @media (max-width: 760px) {
-  .photo-hero { height: auto; min-height: 0; padding-bottom: 26px; }
+  .photo-hero { height: auto; min-height: 100svh; padding-bottom: 90px; }
   .photo-hero header { width: 88%; padding: 18px 0; }
   .photo-hero .header-logo img { width: 58px; height: 58px; }
   .photo-hero nav { left: 0; right: 0; top: 85px; }
