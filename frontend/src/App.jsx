@@ -1,6 +1,5 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import CitrusCascade from "./CitrusCascade.jsx";
 import LegalDialog from "./LegalDialog.jsx";
 import AdminAuth from "./admin/AdminAuth.jsx";
 import { request, assetUrl } from "./api.js";
@@ -102,6 +101,7 @@ function StoreLocation() {
 }
 
 function Reviews() {
+  const [reviewsPaused, setReviewsPaused] = useState(false);
   const [rating, setRating] = useState(0);
   const [status, setStatus] = useState("");
   const [reviews, setReviews] = useState([]);
@@ -129,7 +129,7 @@ function Reviews() {
   }
   return (
     <section className="reviews section" id="reviews">
-      <div>
+      <div className="reviews-heading">
         <span className="eyebrow">A LITTLE LOVE GOES A LONG WAY</span>
         <h2>
           Good food.
@@ -139,20 +139,24 @@ function Reviews() {
         <p className="intro-copy">
           Had a sip, a bite, or a whole feast? Tell us how it made your day.
         </p>
-        <div className="review-stars" aria-hidden="true">
-          ✳ ✳ ✳
-        </div>
-        <span className="small-note">Customer reviews</span>
         {reviewError && <p role="alert">{reviewError}</p>}
         {!reviewError && reviews.length === 0 && <p>Be the first to share your experience.</p>}
-        {reviews.map((review) => (
-          <blockquote key={review._id}>
-            <span aria-label={`${review.rating} out of 5 stars`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</span>
-            <p>“{review.message}”</p>
-            <cite>— {review.name}</cite>
-          </blockquote>
-        ))}
       </div>
+      {reviews.length > 0 && <div className="reviews-showcase">
+        <div className={`reviews-marquee${reviewsPaused ? " is-paused" : ""}${reviews.length === 1 ? " single-review" : ""}`} tabIndex={0} role="region" aria-label="Customer reviews. Hover or focus to pause scrolling.">
+          <div className="reviews-track" style={{ "--review-duration": `${Math.max(30, reviews.length * 9)}s` }}>
+            {[0, ...(reviews.length > 1 ? [1] : [])].map((copy) => <div className="reviews-group" key={copy} aria-hidden={copy === 1 ? true : undefined}>
+              {reviews.map((review) => <blockquote className="customer-review-card" key={review._id}>
+                <span aria-label={`${review.rating} out of 5 stars`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</span>
+                <b className="review-quote" aria-hidden="true">”</b>
+                <p>“{review.message}”</p>
+                <div className="review-author"><span aria-hidden="true">{review.name.trim().charAt(0).toUpperCase()}</span><cite><strong>{review.name}</strong><small>Ayra customer</small></cite></div>
+              </blockquote>)}
+            </div>)}
+          </div>
+        </div>
+        {reviews.length > 1 && <button type="button" className="reviews-pause" onClick={() => setReviewsPaused(!reviewsPaused)} aria-pressed={reviewsPaused}>{reviewsPaused ? "Resume reviews ▶" : "Pause reviews Ⅱ"}</button>}
+      </div>}
       <form className="review-form" onSubmit={submit}>
         <h3>How was your moment?</h3>
         <fieldset>
@@ -209,6 +213,32 @@ function Reviews() {
     </section>
   );
 }
+const heroSlides = [
+  { image: "/images/orange-juice.jpg", label: "Fresh juices" },
+  { image: "/images/grilled-chicken.jpg", label: "Smoky BBQ" },
+  { image: "/images/appam.jpg", label: "Fresh Appam" },
+  { image: "/images/loaded-fries.jpg", label: "Happy bites" },
+];
+
+function HeroBackdrop() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  useEffect(() => {
+    if (paused) return;
+    const timer = window.setInterval(() => setActive((slide) => (slide + 1) % heroSlides.length), 6000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+  return <>
+    <div className="hero-backdrops" aria-hidden="true">
+      {heroSlides.map((slide, index) => <img key={slide.image} src={slide.image} alt="" className={index === active ? "active" : ""} fetchPriority={index === 0 ? "high" : "auto"} />)}
+    </div>
+    <div className="hero-slide-controls" role="group" aria-label="Hero background slideshow">
+      {heroSlides.map((slide, index) => <button key={slide.image} className={index === active ? "active" : ""} aria-label={`Show ${slide.label}`} aria-pressed={index === active} onClick={() => setActive(index)}><span /></button>)}
+      <button className="hero-pause" aria-label={paused ? "Play slideshow" : "Pause slideshow"} onClick={() => setPaused(!paused)}>{paused ? "▶" : "Ⅱ"}</button>
+    </div>
+  </>;
+}
+
 function CustomerApp() {
   const [items, setItems] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -319,7 +349,7 @@ function CustomerApp() {
         Skip to menu
       </a>
       <section
-        className="hero citrus-hero"
+        className="hero photo-hero"
         id="home"
         ref={hero}
         onPointerMove={move}
@@ -328,6 +358,7 @@ function CustomerApp() {
           hero.current.style.setProperty("--ry", "0deg");
         }}
       >
+        <HeroBackdrop />
         <header>
           <a className="header-logo" href="#home" aria-label="Ayra Juice Shop home">
             <img src="/images/logo1-transparent.png" alt="Ayra Juice Bar" width="80" height="80" />
@@ -356,46 +387,17 @@ function CustomerApp() {
             {open ? "✕" : "☰"}
           </button>
         </header>
-        <div className="hero-title">
-          
-          <h1>
-            Squeese the <span>day</span> <br className="mobile-break" />
-             
-          </h1>
+        <div className="photo-hero-content">
+          <span className="hero-location"><i /> FRESH FLAVOURS. LOCAL SOUL.</span>
+          <h1>Juice shop bar<br />in <span>Pallai.</span></h1>
+          <p>Fresh juices, warm Appam and smoky BBQ.<br className="desktop-break" /> A little fresh. A little fire. A whole lot of good times.</p>
+          <div className="hero-actions">
+            <a className="hero-primary" href="#menu">Explore our menu <span>↗</span></a>
+            <a className="hero-secondary" href="#visit">Find us in Pallai <span>↗</span></a>
+          </div>
         </div>
-        <div className="hero-scene citrus-scene">
-          <div className="original-juice-cups" aria-hidden="true">
-            <div className="hero-cup left-cup">
-              <Cup type="orange" />
-            </div>
-            <div className="hero-cup right-cup">
-              <Cup type="melon" />
-            </div>
-            <div className="hero-cup front-cup">
-              <Cup type="mango" />
-            </div>
-          </div>
-          <CitrusCascade />
-          <span className="citrus-spark" aria-hidden="true">
-            ✳
-          </span>
-        </div>
-        <div className="hero-bottom">
-          <div>
-            <p>
-              A little fresh. A little fire.
-              <br />A whole lot of good times.
-            </p>
-            <a className="button lime-button" href="#menu">
-              Explore our menu <span>↗</span>
-            </a>
-          </div>
-          <div className="fresh-stamp">
-            <span>MADE FRESH</span>
-            <b>100%</b>
-            <span>GOOD MOOD</span>
-          </div>
-          
+        <div className="hero-highlights">
+          {[["01", "Fresh juices", "Fruit-filled refreshment"], ["02", "Warm Appam", "Comfort in every bite"], ["03", "Smoky BBQ", "Good food from the flame"], ["04", "Good company", "Your local spot in Pallai"]].map(([number, title, subtitle]) => <div key={number}><span>{number}</span><div><strong>{title}</strong><small>{subtitle}</small></div></div>)}
         </div>
       </section>
       <div className="ticker" aria-hidden="true">
