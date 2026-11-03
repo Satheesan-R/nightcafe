@@ -2311,7 +2311,7 @@ footer {
 
 /* Photography-led customer hero */
 .photo-hero {
-  min-height: 900px;
+  min-height: 850px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -2362,7 +2362,7 @@ footer {
 .photo-hero .header-logo img { background: #fff8ec; padding: 5px; width: 76px; height: 76px; border-radius: 50%; }
 .photo-hero .visit-button { background: #f97821; border-color: #f97821; color: #fff; font-weight: 700; font-size: 11px; padding: 8px 13px; gap: 14px; }
 .photo-hero .visit-button span { font-size: 17px; }
-.photo-hero-content { width: min(1320px, 90%); margin: 76px auto 56px; padding-right: 45px; }
+.photo-hero-content { width: min(1320px, 90%); margin: 36px auto 56px; padding-right: 45px; }
 .hero-location { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: 1.8px; padding: 11px 16px; border: 1px solid #ffb26955; border-radius: 24px; background: #ff972018; }
 .hero-location i { width: 7px; height: 7px; background: #ff9a42; border-radius: 50%; }
 .photo-hero h1 { font-family: "DM Sans", Arial, sans-serif; font-size: clamp(48px, 5.5vw, 82px); font-weight: 800; line-height: 1.08; letter-spacing: -.055em; text-transform: none; white-space: normal; margin: 24px 0; }
@@ -2378,14 +2378,14 @@ footer {
 .hero-highlights > div > span { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #f978211a; border: 1px solid #f9782155; font-size: 12px; color: #ffa253; }
 .hero-highlights strong { display: block; font-size: 18px; letter-spacing: -.4px; }
 .hero-highlights small { display: block; margin-top: 5px; color: #dec3ac; font-size: 11px; }
-@media (min-width: 1600px) { .photo-hero { min-height: 1000px; } .photo-hero-content { margin-top: 100px; } }
-@media (max-width: 1000px) { .hero-highlights { grid-template-columns: repeat(2, 1fr); } .photo-hero-content { margin-top: 60px; } }
+@media (min-width: 1600px) { .photo-hero { min-height: 950px; } .photo-hero-content { margin-top: 50px; } }
+@media (max-width: 1000px) { .hero-highlights { grid-template-columns: repeat(2, 1fr); } .photo-hero-content { margin-top: 30px; } }
 @media (max-width: 760px) {
-  .photo-hero { height: auto; min-height: 100svh; padding-bottom: 90px; }
+  .photo-hero { height: auto; min-height: 95svh; padding-bottom: 65px; }
   .photo-hero header { width: 88%; padding: 18px 0; }
   .photo-hero .header-logo img { width: 58px; height: 58px; }
   .photo-hero nav { left: 0; right: 0; top: 85px; }
-  .photo-hero-content { width: 88%; margin: 54px auto 32px; padding-right: 0; }
+  .photo-hero-content { width: 88%; margin: 24px auto 32px; padding-right: 0; }
   .photo-hero h1 { font-size: clamp(44px, 9vw, 65px); line-height: 1.1; margin: 22px 0; }
   .hero-location { font-size: 9px; letter-spacing: 1px; }
   .photo-hero-content > p { font-size: 14px; max-width: 90%; }
