@@ -213,18 +213,6 @@ function Reviews() {
     </section>
   );
 }
-function HeroBackdrop() {
-  return (
-    <div className="hero-backdrops" aria-hidden="true">
-      <div className="hero-cup-trio">
-      <img src="/images/ayra-mango-cup.png" alt="" />
-      <img src="/images/ayra-orange-cup.png" alt="" fetchPriority="high" />
-      <img src="/images/ayra-lime-cup.png" alt="" />
-      </div>
-    </div>
-  );
-}
-
 function CustomerApp() {
   const [items, setItems] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -344,7 +332,6 @@ function CustomerApp() {
           hero.current.style.setProperty("--ry", "0deg");
         }}
       >
-        <HeroBackdrop />
         <header>
           <a className="header-logo" href="#home" aria-label="Ayra Juice Shop home">
             <img src="/images/logo1-transparent.png" alt="Ayra Juice Bar" width="80" height="80" />
@@ -373,15 +360,26 @@ function CustomerApp() {
             {open ? "✕" : "☰"}
           </button>
         </header>
-        <div className="photo-hero-content">
-          
-          <h1>Juice shop bar<br />in <span>Pallai.</span></h1>
-          <p>Fresh juices, warm Appam and smoky BBQ.<br className="desktop-break" /> A little fresh. A little fire. A whole lot of good times.</p>
-          <div className="hero-actions">
-            <a className="hero-primary" href="#menu">Explore our menu <span>↗</span></a>
-            <a className="hero-secondary" href="#visit">Find us in Pallai <span>↗</span></a>
+        <div className="juice-editorial">
+          <div className="juice-headline">
+            <h1>JUICE<br />OF THE<br />PALLAI.</h1>
+            <p className="juice-signoff">FRESHLY MADE. FULL OF GOODNESS.</p>
+            <a className="juice-menu-link" href="#menu">Discover our flavours <span aria-hidden="true">?</span></a>
+            <span className="juice-hashtag">#FreshFromAyra</span>
+          </div>
+          <div className="juice-product">
+            <div className="juice-product-glow" aria-hidden="true" />
+            <img src="/images/ayra-lime-cup.png" alt="Ayra's refreshing green lime juice" width="1128" height="1376" fetchPriority="high" />
+            <span className="juice-product-caption">FRESH FRUIT. HAPPY SIPS.</span>
+          </div>
+          <div className="juice-intro">
+            <img className="juice-brand-mark" src="/images/logo1-transparent.png" alt="Ayra Juice Shop" width="180" height="180" />
+            <p>A little fresh.<br />A whole lot of flavour.</p>
+            <p>Fresh juices, warm Appam and smoky BBQ. Made with love, right here in Pallai.</p>
+            <a href="#visit">Drop by for your daily dose of good. <span aria-hidden="true">?</span></a>
           </div>
         </div>
+        <div className="juice-hero-footer"><span>PALLAI, SRI LANKA</span><span>GOOD THINGS INSIDE.</span><a href="#menu">SCROLL TO EXPLORE ?</a></div>
       </section>
       <div className="ticker" aria-hidden="true">
         <div>
