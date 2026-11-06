@@ -213,6 +213,64 @@ function Reviews() {
     </section>
   );
 }
+function HeroFlavours() {
+  const row = useRef(null);
+  useEffect(() => {
+    const element = row.current;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const cups = [...element.querySelectorAll(".fresh-flavour")];
+    let frame = 0;
+    let previous = null;
+    let travel = 0;
+    const draw = () => {
+      const width = element.clientWidth;
+      const spacing = width / 3;
+      const circuit = spacing * cups.length;
+      cups.forEach((cup, index) => {
+        const x = ((index * spacing + spacing / 2 - travel + spacing) % circuit + circuit) % circuit - spacing;
+        const bend = Math.min(1.8, ((x - width / 2) / (width / 2)) ** 2);
+        const y = bend * (width < 760 ? 40 : 85);
+        cup.style.transform = `translate(calc(${x}px - 50%), ${y}px)`;
+      });
+    };
+    const tick = (time) => {
+      if (previous !== null && !media.matches) {
+        travel = (travel + Math.min(time - previous, 64) * element.clientWidth / 20000) % (element.clientWidth * 2);
+      }
+      previous = time;
+      draw();
+      frame = requestAnimationFrame(tick);
+    };
+    draw();
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+
+    };
+  }, []);
+  const flavours = [
+    { type: "melon", name: "Watermelon", note: "Sweet & refreshing" },
+    { type: "lime", name: "Lime Fresh", note: "Bright & zesty" },
+    { type: "mango", name: "Mango Magic", note: "A little tropical sunshine" },
+  ];
+  return (
+    <div className="fresh-flavours" ref={row} aria-label="Explore our fresh juice flavours">
+      <div className="fresh-flavours-track">
+        {[0, 1].map((copy) => (
+          <div className="fresh-flavours-group" key={copy} aria-hidden={copy === 1 ? true : undefined}>
+            {flavours.map(({ type, name, note }) => (
+              <a className={`fresh-flavour fresh-flavour-${type}`} href="#menu" key={type} tabIndex={copy === 1 ? -1 : undefined}>
+                <div className="fresh-flavour-circle"><img src={`/images/ayra-${type}-cup.png`} alt={copy === 0 ? `${name} Ayra juice cup` : ""} width="1128" height="1376" /></div>
+                <h2>{name}</h2><p>{note}</p>
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function CustomerApp() {
   const [items, setItems] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -300,22 +358,6 @@ function CustomerApp() {
   useEffect(() => {
     if (selected && !dialog.current.open) dialog.current.showModal();
   }, [selected]);
-  function move(event) {
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)")
-        .matches
-    )
-      return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    hero.current.style.setProperty(
-      "--rx",
-      `${(event.clientX - rect.left - rect.width / 2) / 60}deg`,
-    );
-    hero.current.style.setProperty(
-      "--ry",
-      `${-(event.clientY - rect.top - rect.height / 2) / 70}deg`,
-    );
-  }
 
   return (
     <>
@@ -323,14 +365,10 @@ function CustomerApp() {
         Skip to menu
       </a>
       <section
-        className="hero photo-hero"
+        className="hero fresh-hero"
         id="home"
         ref={hero}
-        onPointerMove={move}
-        onPointerLeave={() => {
-          hero.current.style.setProperty("--rx", "0deg");
-          hero.current.style.setProperty("--ry", "0deg");
-        }}
+
       >
         <header>
           <a className="header-logo" href="#home" aria-label="Ayra Juice Shop home">
@@ -360,26 +398,26 @@ function CustomerApp() {
             {open ? "✕" : "☰"}
           </button>
         </header>
-        <div className="juice-editorial">
-          <div className="juice-headline">
-            <h1>JUICE<br />OF THE<br />PALLAI.</h1>
-            <p className="juice-signoff">FRESHLY MADE. FULL OF GOODNESS.</p>
-            <a className="juice-menu-link" href="#menu">Discover our flavours <span aria-hidden="true">?</span></a>
-            <span className="juice-hashtag">#FreshFromAyra</span>
+        <div className="fresh-hero-main">
+          <div className="fresh-hero-copy">
+            <span className="fresh-eyebrow">FRESH FROM AYRA, PALLAI</span>
+            <h1>Start your day with<br />a <span>fresh juice.</span></h1>
+            <p>A little sunshine in every sip. Discover fruit-filled favourites, freshly made with love at Ayra Juice Shop.</p>
+            <div className="fresh-hero-actions">
+              <a className="fresh-menu-button" href="#menu">Explore our menu <span aria-hidden="true">&#8599;</span></a>
+              <a className="fresh-visit-button" href="#visit">Come say hello</a>
+            </div>
           </div>
-          <div className="juice-product">
-            <div className="juice-product-glow" aria-hidden="true" />
-            <img src="/images/ayra-lime-cup.png" alt="Ayra's refreshing green lime juice" width="1128" height="1376" fetchPriority="high" />
-            <span className="juice-product-caption">FRESH FRUIT. HAPPY SIPS.</span>
-          </div>
-          <div className="juice-intro">
-            <img className="juice-brand-mark" src="/images/logo1-transparent.png" alt="Ayra Juice Shop" width="180" height="180" />
-            <p>A little fresh.<br />A whole lot of flavour.</p>
-            <p>Fresh juices, warm Appam and smoky BBQ. Made with love, right here in Pallai.</p>
-            <a href="#visit">Drop by for your daily dose of good. <span aria-hidden="true">?</span></a>
+          <div className="fresh-feature">
+            <span className="fresh-orange-disc disc-one" aria-hidden="true" />
+            <span className="fresh-orange-disc disc-two" aria-hidden="true" />
+            <span className="fresh-orange-disc disc-three" aria-hidden="true" />
+            <img className="fresh-feature-cup" src="/images/ayra-orange-cup.png" alt="Fresh orange juice in an Ayra Juice Shop cup" width="1128" height="1376" fetchPriority="high" />
+            <div className="fresh-feature-label"><div><strong>Fresh Orange Juice</strong><p>A bright sip of sunshine.</p></div><a href="#menu" aria-label="Explore fresh orange juice">&#8599;</a></div>
+            <span className="fresh-feature-tag">FRUIT FIRST. ALWAYS.</span>
           </div>
         </div>
-        <div className="juice-hero-footer"><span>PALLAI, SRI LANKA</span><span>GOOD THINGS INSIDE.</span><a href="#menu">SCROLL TO EXPLORE ?</a></div>
+        <HeroFlavours />
       </section>
       <div className="ticker" aria-hidden="true">
         <div>
